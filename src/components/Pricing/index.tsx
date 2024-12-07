@@ -3,11 +3,13 @@ import SectionTitle from "../Common/SectionTitle";
 import PricingBox from "./PricingBox";
 import { pricingData } from "@/stripe/pricingData";
 
-const Pricing = () => {
+const Pricing = ({ noTopPadding = false }: { noTopPadding?: boolean }) => {
   return (
     <section
       id="pricing"
-      className="relative z-20 overflow-hidden bg-white pb-12 pt-20 dark:bg-dark lg:pb-[90px] lg:pt-[120px]"
+      className={`relative z-20 overflow-hidden bg-white pb-12 pt-20 dark:bg-dark lg:pb-[90px] lg:pt-[120px] ${
+        noTopPadding ? "pt-0" : "pt-20"
+      }`}
     >
       <div className="container">
         <div className="mb-[60px]">

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         quantity: 1,
       },
     ],
-    mode: "subscription",
+    mode: "payment", // todo: change to subscription
     success_url: process.env.SITE_URL!,
     cancel_url: process.env.SITE_URL!,
   });

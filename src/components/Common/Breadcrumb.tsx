@@ -3,9 +3,11 @@ import Link from "next/link";
 const Breadcrumb = ({
   pageName,
   pageDescription,
+  hideBreadcrumb,
 }: {
   pageName: string;
   pageDescription?: string;
+  hideBreadcrumb?: boolean;
 }) => {
   return (
     <>
@@ -22,8 +24,9 @@ const Breadcrumb = ({
                   {pageDescription}
                 </p>
 
-                <ul className="flex items-center justify-center gap-[10px]">
-                  <li>
+                {!hideBreadcrumb && (
+                  <ul className="flex items-center justify-center gap-[10px]">
+                    <li>
                     <Link
                       href="/"
                       className="text-dark flex items-center gap-[10px] text-base font-medium dark:text-white"
@@ -40,7 +43,8 @@ const Breadcrumb = ({
                       {pageName}
                     </p>
                   </li>
-                </ul>
+                  </ul>
+                )}
               </div>
             </div>
           </div>
