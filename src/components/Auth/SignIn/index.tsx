@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import SocialSignIn from "../SocialSignIn";
@@ -12,6 +12,7 @@ import Loader from "@/components/Common/Loader";
 
 const Signin = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -38,7 +39,8 @@ const Signin = () => {
         if (callback?.ok && !callback?.error) {
           toast.success("Login successful");
           setLoading(false);
-          router.push("/under-construction");
+          const callbackUrl = "/generate"; // todo: searchParams.get("callbackUrl")
+          router.push(callbackUrl);
         }
       })
       .catch((err) => {
