@@ -1,31 +1,51 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 import { prisma } from "@/utils/prismaDB";
 
 export async function GET(request: Request) {
-  return NextResponse.json({ message: 'Hello, world!' }, { status: 200 });
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get('userId');
+
+  console.log('GET /api/keywords', { userId });
+
+  if (!userId) {
+    return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+  }
+
+  const keywords = await prisma.keyword.findMany({
+    where: { userId }
+  });
+
+  return NextResponse.json({ keywords });
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-
-  const keywords = Object.keys(body).map((key) => {
-    const index = Number(key.split('-')[1]);
-    return {
-      keyword: body[key],
-      position: index
-    };
-  });
-
-  console.log({keywords});
-
-  await prisma.keyword.create({
-    data: {
-      keyword: 'test',
-      position: 1,
-      userId: 'cm4j7smns000013k86y3vu7ve',
-    }
-  });
+  const keywords = await request.json();
   
-  return NextResponse.json({ message: 'Keywords received' }, { status: 200 });
+  if (!keywords?.length || !keywords[0]?.userId) {
+    return NextResponse.json({ error: 'Invalid keywords data' }, { status: 400 });
+  }
+
+  const userId = keywords[0].userId;
+
+  // First delete existing keywords for this user
+  await prisma.keyword.deleteMany({
+    where: { userId }
+  });
+
+  // Then create the new ones
+  await prisma.keyword.createMany({
+    data: keywords
+  });
+
+  return NextResponse.json({ message: 'Keywords updated' });
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const keywordId = searchParams.get('id');
+  
+  console.log('DELETE /api/keywords', { keywordId });
+
+  return NextResponse.json({ message: 'Keyword deleted' });
 }
 

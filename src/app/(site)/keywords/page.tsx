@@ -3,24 +3,51 @@
 import SideNav from "@/components/SideNav";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { Keyword } from "@prisma/client";
 
 type KeywordForm = {
-  keyword1: string;
-  keyword2: string;
-  keyword3: string;
-  keyword4: string;
-  keyword5: string;
+  'keyword-1': string;
+  'keyword-2': string;
+  'keyword-3': string;
+  'keyword-4': string;
+  'keyword-5': string;
 }
 
 const KeywordsPage = () => {
-  const { data: session, status } = useSession();
-  const { register, handleSubmit } = useForm<KeywordForm>();
+  const { data: session } = useSession();
+  const { register, handleSubmit, reset } = useForm<KeywordForm>();
+  const userId = (session?.user as any)?.id || '';
+
+  useEffect(() => {
+    if (!userId) return;
+    
+    fetch(`/api/keywords?userId=${userId}`)
+      .then(response => response.json())
+      .then(data => {
+        const formValues = data.keywords.reduce((acc: Partial<KeywordForm>, curr: Keyword) => {
+          acc[`keyword-${curr.position}` as keyof KeywordForm] = curr.keyword;
+          return acc;
+        }, {});
+        
+        reset(formValues);
+      })
+      .catch(error => console.error('Error fetching keywords:', error));
+  }, [userId, reset]);
 
   const onSubmit = (data: KeywordForm) => {
-    console.log({data});
+    const keywordsToSubmit = Object.entries(data).map(([key, value]) => ({
+      keyword: value,
+      position: parseInt(key.replace('keyword-', '')),
+      userId
+    }));
+    
     fetch('/api/keywords', {
       method: 'POST',
-      body: JSON.stringify(data)
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(keywordsToSubmit)
     });
   };
 
@@ -30,9 +57,9 @@ const KeywordsPage = () => {
         <SideNav />
         <div className="container mx-auto px-4 py-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {[1, 2, 3, 4, 5].map((num) => (
+            {Array.from({ length: 5 }, (_, index) => index + 1).map((num) => (
               <input
-                key={num}
+                key={`keyword-${num}`}
                 {...register(`keyword-${num}` as keyof KeywordForm)}
                 className="w-full p-2 border rounded-md"
                 placeholder={`Enter keyword ${num}`}
