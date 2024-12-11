@@ -32,7 +32,7 @@ const tweets = [
   }
 ];
 
-const AppHomePage = () => {
+const MentionsPage = () => {
   const { data: session, status } = useSession();
 
   return (
@@ -56,4 +56,4 @@ const AppHomePage = () => {
   );
 };
 
-export default AppHomePage;
+export default MentionsPage;
