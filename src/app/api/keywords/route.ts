@@ -27,12 +27,10 @@ export async function POST(request: Request) {
 
   const userId = keywords[0].userId;
 
-  // First delete existing keywords for this user
+  // todo is there a better way to do this?
   await prisma.keyword.deleteMany({
     where: { userId }
   });
-
-  // Then create the new ones
   await prisma.keyword.createMany({
     data: keywords
   });
