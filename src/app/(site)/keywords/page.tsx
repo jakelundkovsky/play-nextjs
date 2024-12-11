@@ -17,7 +17,11 @@ const KeywordsPage = () => {
   const { register, handleSubmit } = useForm<KeywordForm>();
 
   const onSubmit = (data: KeywordForm) => {
-    console.log('Keywords:', data);
+    console.log({data});
+    fetch('/api/keywords', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
   };
 
   return (
@@ -29,7 +33,7 @@ const KeywordsPage = () => {
             {[1, 2, 3, 4, 5].map((num) => (
               <input
                 key={num}
-                {...register(`keyword${num}` as keyof KeywordForm)}
+                {...register(`keyword-${num}` as keyof KeywordForm)}
                 className="w-full p-2 border rounded-md"
                 placeholder={`Enter keyword ${num}`}
               />
