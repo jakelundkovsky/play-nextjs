@@ -49,6 +49,7 @@ model User {
   passwordResetTokenExp DateTime?
   accounts              Account[]
   sessions              Session[]
+  Keyword               Keyword[]
 }
 
 model VerificationToken {
@@ -57,4 +58,17 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Keyword {
+  id        String   @id @default(cuid())
+  keyword   String   @db.VarChar(50)
+  position  Int // 1-5 to maintain order
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, position])
 }
